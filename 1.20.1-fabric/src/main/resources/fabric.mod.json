@@ -1,0 +1,33 @@
+{
+	"schemaVersion": 1,
+	"id": "instantreload",
+	"version": "${version}",
+	"name": "InstantReload",
+	"description": "Selective sprite atlas reload for resource-pack changes.",
+	"authors": [
+		"neutka"
+	],
+	"contact": {
+		"sources": "https://github.com/neutka/instantreload"
+	},
+	"license": "MIT",
+	"icon": "assets/instantreload/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"neutka.minecraft.InstantReloadClient"
+		]
+	},
+	"mixins": [
+		{
+			"config": "instantreload.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~1.20.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
