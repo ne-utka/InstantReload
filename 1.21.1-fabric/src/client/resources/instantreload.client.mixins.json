@@ -1,0 +1,16 @@
+{
+	"required": true,
+	"package": "neutka.minecraft.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"AtlasLoaderMixin",
+		"SpriteAtlasManagerAtlasView",
+		"SpriteAtlasManagerMixin",
+		"SpriteAtlasTextureAccessor",
+		"SpriteAtlasTextureMixin",
+		"TextureManagerMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
