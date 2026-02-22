@@ -118,8 +118,11 @@ JVM flags:
   Enables internal debug logging.
 
 - `-Dinstantreload.strictSignatures=true`  
-  Uses stricter dependency signature mode (reads resource bytes for stack signatures).  
-  More robust, but slower.
+  Strict dependency signature mode (reads resource bytes for stack signatures).  
+  Enabled by default in current builds for correctness.
+
+- `-Dinstantreload.strictSignatures=false`  
+  Disables byte hashing in resource stack signatures (faster, but may miss in-place texture edits inside same pack id).
 
 ## Development
 
@@ -145,4 +148,3 @@ Run client:
 ## License
 
 MIT (see `fabric.mod.json` and project license files).
-

@@ -13,8 +13,10 @@ import net.minecraft.util.Identifier;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public final class AtlasHashCalculator {
@@ -46,10 +48,24 @@ public final class AtlasHashCalculator {
 		List<AtlasSource.SpriteSource> sources = loader.loadSources(resourceManager);
 		accumulator.updateInt(sources.size());
 		Set<Identifier> dependencies = new HashSet<>();
+		Map<Identifier, Boolean> dependencyPresenceCache = new HashMap<>();
 
 		SpriteOpener delegate = SpriteOpener.create(additionalMetadata);
+		final boolean[] hasUnresolvedDependencies = {false};
 		SpriteOpener hashingOpener = (spriteId, resource) -> {
-			dependencies.add(spriteId);
+			Identifier dependencyResourceId = AtlasSource.RESOURCE_FINDER.toResourcePath(spriteId);
+			dependencies.add(dependencyResourceId);
+			boolean dependencyPresent = dependencyPresenceCache.computeIfAbsent(dependencyResourceId, id -> {
+				try {
+					return resourceManager.getResource(id).isPresent();
+				} catch (Throwable throwable) {
+					return false;
+				}
+			});
+			if (!dependencyPresent) {
+				hasUnresolvedDependencies[0] = true;
+			}
+
 			accumulator.updateUtf8("sprite-input");
 			accumulator.updateIdentifier(spriteId);
 			accumulator.updateUtf8(resource.getPackId());
@@ -79,7 +95,11 @@ public final class AtlasHashCalculator {
 			}
 		}
 
-		return new AtlasScanResult(accumulator.finish(spriteCount), Set.copyOf(dependencies));
+		return new AtlasScanResult(
+			accumulator.finish(spriteCount),
+			Set.copyOf(dependencies),
+			hasUnresolvedDependencies[0]
+		);
 	}
 
 	private static void hashResourceBytes(HashAccumulator accumulator, Resource resource) {

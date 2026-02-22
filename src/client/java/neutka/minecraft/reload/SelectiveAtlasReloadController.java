@@ -40,7 +40,8 @@ public final class SelectiveAtlasReloadController {
 	private volatile boolean fallbackToFullReload;
 	private volatile boolean debug;
 	private volatile int expectedAtlasCount;
-	private final boolean strictResourceSignatures = Boolean.getBoolean("instantreload.strictSignatures");
+	private final boolean strictResourceSignatures =
+		Boolean.parseBoolean(System.getProperty("instantreload.strictSignatures", "true"));
 
 	private SelectiveAtlasReloadController() {
 	}
@@ -94,6 +95,10 @@ public final class SelectiveAtlasReloadController {
 				candidates.add(atlasTextureId);
 				continue;
 			}
+			if (previousState.hasUnresolvedDependencies()) {
+				candidates.add(atlasTextureId);
+				continue;
+			}
 
 			Identifier previousDefinitionPath = this.toDefinitionPath(previousState.definitionId());
 			String previousDefinitionSignature = this.previousResourceSignatures.get(previousDefinitionPath);
@@ -129,7 +134,12 @@ public final class SelectiveAtlasReloadController {
 		AtlasScanResult result
 	) {
 		AtlasState previous = this.previousStates.get(atlasTextureId);
-		AtlasState current = new AtlasState(metadata.definitionId(), result.fingerprint(), result.dependencies());
+		AtlasState current = new AtlasState(
+			metadata.definitionId(),
+			result.fingerprint(),
+			result.dependencies(),
+			result.hasUnresolvedDependencies()
+		);
 		this.nextStates.put(atlasTextureId, current);
 
 		for (Identifier dependency : result.dependencies()) {
@@ -305,7 +315,12 @@ public final class SelectiveAtlasReloadController {
 		return merged;
 	}
 
-	private record AtlasState(Identifier definitionId, AtlasFingerprint fingerprint, Set<Identifier> dependencies) {
+	private record AtlasState(
+		Identifier definitionId,
+		AtlasFingerprint fingerprint,
+		Set<Identifier> dependencies,
+		boolean hasUnresolvedDependencies
+	) {
 		private AtlasState {
 			dependencies = Set.copyOf(dependencies);
 		}
