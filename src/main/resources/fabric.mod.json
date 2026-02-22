@@ -3,27 +3,22 @@
 	"id": "instantreload",
 	"version": "${version}",
 	"name": "InstantReload",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Selective sprite atlas reload for resource-pack changes.",
 	"authors": [
-		"Me!"
+		"neutka"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/neutka/instantreload"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/instantreload/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
-		"main": [
-			"neutka.minecraft.InstantReload"
-		],
 		"client": [
 			"neutka.minecraft.InstantReloadClient"
 		]
 	},
 	"mixins": [
-		"instantreload.mixins.json",
 		{
 			"config": "instantreload.client.mixins.json",
 			"environment": "client"
